@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 as Linux-builder
+FROM ubuntu:24.04 AS linux-builder
 
 ENV LINUX=/linux 
 
@@ -18,3 +18,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y git build-es
  pkg-config lsb-release wget software-properties-common gnupg zlib1g llvm \
  qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virtinst libvirt-daemon xterm attr busybox openssh-server \
  iputils-ping kmod
+
+RUN wget https://apt.llvm.org/llvm.sh
+RUN chmod +x llvm.sh
+RUN ./llvm.sh 19
+RUN ln -s /usr/bin/clang-19 /usr/bin/clang
+RUN ln -s /usr/bin/clang++-19 /usr/bin/clang++
+RUN ln -s /usr/bin/ld.lld-19 /usr/bin/ld.lld
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y curl
+
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo install cross
+
