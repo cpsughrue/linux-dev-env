@@ -30,4 +30,3 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y curl
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install cross
-
