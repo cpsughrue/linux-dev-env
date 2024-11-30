@@ -1,3 +1,6 @@
 [submodule "linux"]
 	path = linux
 	url = git@github.com:ba11b0y/linux.git
+[submodule "CS5204"]
+	path = CS5204
+	url = git@github.com:ZhuoweiWen/CS5204.git
