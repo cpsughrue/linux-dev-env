@@ -30,3 +30,18 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y curl
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install cross
+
+# dependencies for building prevail
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+ libboost-dev \
+ libyaml-cpp-dev \
+ libboost-filesystem-dev \
+ libboost-program-options-dev
+
+ # build prevail
+RUN mkdir verifiers
+WORKDIR /verifiers
+RUN git clone --recurse-submodule https://github.com/vbpf/ebpf-verifier.git prevail
+RUN sed -i 's/VERIFIER_ENABLE_TESTS "Build tests" OFF/VERIFIER_ENABLE_TESTS "Build tests" ON/' prevail/CMakeLists.txt
+WORKDIR /verifiers/prevail
+RUN cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel `nproc`
