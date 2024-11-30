@@ -17,7 +17,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y git build-es
  libcap-dev libdisasm-dev binutils-dev unzip \
  pkg-config lsb-release wget software-properties-common gnupg zlib1g llvm \
  qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virtinst libvirt-daemon xterm attr busybox openssh-server \
- iputils-ping kmod
+ iputils-ping kmod 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y iproute2
 
 RUN wget https://apt.llvm.org/llvm.sh
 RUN chmod +x llvm.sh

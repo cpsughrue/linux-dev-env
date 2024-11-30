@@ -75,7 +75,7 @@ int userspace_netlink() {
 
 	printf("Sending message to kernel\n");
 	int ret = sendmsg(sock_fd, &msg, 0);   
-	printf("send ret: %d\n", ret);
+	printf("Send ret: %d\n", ret);
 
 	char usermsg[MAX_PAYLOAD];
 	while (1) {
