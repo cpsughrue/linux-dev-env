@@ -1,4 +1,3 @@
-// compile using gcc netlink_client.c -o netlink_client -g
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -21,8 +20,7 @@ struct msghdr msg, resp;  // famous struct msghdr, it includes "struct iovec *  
 struct iovec iov, iov2;
 int sock_fd;
 
-int main(int args, char *argv[])
-{
+int userspace_netlink() {
 	//int socket(int domain, int type, int protocol);
 	sock_fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_BPF_USER); //NETLINK_KOBJECT_UEVENT  
 
@@ -35,9 +33,9 @@ int main(int args, char *argv[])
 
 	//int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 	if(bind(sock_fd, (struct sockaddr*)&src_addr, sizeof(src_addr))){
-	perror("bind() error\n");
-	close(sock_fd);
-	return -1;
+		perror("bind() error\n");
+		close(sock_fd);
+		return -1;
 	}
 
 	memset(&dest_addr, 0, sizeof(dest_addr));
@@ -75,14 +73,9 @@ int main(int args, char *argv[])
 	resp.msg_iov = &iov2;                 //resp -> iov
 	resp.msg_iovlen = 1;
 
-
-
 	printf("Sending message to kernel\n");
-
 	int ret = sendmsg(sock_fd, &msg, 0);   
-	printf("send ret: %d\n", ret); 
-
-
+	printf("Send ret: %d\n", ret);
 
 	char usermsg[MAX_PAYLOAD];
 	while (1) {
@@ -91,6 +84,4 @@ int main(int args, char *argv[])
 		printf("Received verifier id: %s\n", (char *) NLMSG_DATA(nlh2)); 
 	}
 	close(sock_fd);
-
-	return 0;
 }

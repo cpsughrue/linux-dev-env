@@ -17,7 +17,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y git build-es
  libcap-dev libdisasm-dev binutils-dev unzip \
  pkg-config lsb-release wget software-properties-common gnupg zlib1g llvm \
  qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virtinst libvirt-daemon xterm attr busybox openssh-server \
- iputils-ping kmod
+ iputils-ping kmod 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y iproute2
 
 RUN wget https://apt.llvm.org/llvm.sh
 RUN chmod +x llvm.sh
@@ -31,3 +32,17 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install cross
 
+# dependencies for building prevail
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+ libboost-dev \
+ libyaml-cpp-dev \
+ libboost-filesystem-dev \
+ libboost-program-options-dev
+
+ # build prevail
+RUN mkdir verifiers
+WORKDIR /verifiers
+RUN git clone --recurse-submodule https://github.com/vbpf/ebpf-verifier.git prevail
+RUN sed -i 's/VERIFIER_ENABLE_TESTS "Build tests" OFF/VERIFIER_ENABLE_TESTS "Build tests" ON/' prevail/CMakeLists.txt
+WORKDIR /verifiers/prevail
+RUN cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel `nproc`
