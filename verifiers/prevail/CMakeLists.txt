@@ -131,6 +131,7 @@ endif ()
 add_library(ebpfverifier ${LIB_SRC})
 
 if(VERIFIER_ENABLE_TESTS)
+add_library(check_shared SHARED src/main/check.cpp src/main/linux_verifier.cpp)
 add_executable(check src/main/check.cpp src/main/linux_verifier.cpp)
 add_executable(tests ${ALL_TEST})
 add_executable(run_yaml src/main/run_yaml.cpp)
@@ -141,6 +142,11 @@ target_include_directories(ebpfverifier PRIVATE ${GSL_INCLUDE_DIRS})
 
 if(VERIFIER_ENABLE_TESTS)
 target_include_directories(run_yaml PRIVATE src/test)
+
+set_target_properties(check_shared
+        PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/.."
+        OUTPUT_NAME "prevail")
 
 set_target_properties(check
         PROPERTIES
@@ -188,6 +194,12 @@ target_link_libraries(ebpfverifier PRIVATE Microsoft.GSL::GSL)
 target_compile_options(ebpfverifier PRIVATE ${COMMON_FLAGS})
 
 if(VERIFIER_ENABLE_TESTS)
+target_compile_options(check PRIVATE ${COMMON_FLAGS})
+target_compile_options(check PUBLIC "$<$<CONFIG:DEBUG>:${DEBUG_FLAGS}>")
+target_compile_options(check PUBLIC "$<$<CONFIG:RELEASE>:${RELEASE_FLAGS}>")
+target_compile_options(check PUBLIC "$<$<CONFIG:SANITIZE>:${SANITIZE_FLAGS}>")
+target_link_libraries(check PRIVATE ebpfverifier)
+
 target_compile_options(check PRIVATE ${COMMON_FLAGS})
 target_compile_options(check PUBLIC "$<$<CONFIG:DEBUG>:${DEBUG_FLAGS}>")
 target_compile_options(check PUBLIC "$<$<CONFIG:RELEASE>:${RELEASE_FLAGS}>")

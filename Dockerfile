@@ -41,8 +41,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
  libboost-filesystem-dev \
  libboost-program-options-dev
 
- # build prevail
+# RUN mkdir plugins
+RUN mkdir plugins
+
+# build prevail
 RUN mkdir verifiers
 COPY ./verifiers/prevail /verifiers/prevail
 WORKDIR /verifiers/prevail
 RUN cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel `nproc`
+RUN cp /verifiers/prevail/libprevail.so /plugins

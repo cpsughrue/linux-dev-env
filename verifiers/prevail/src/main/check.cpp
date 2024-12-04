@@ -65,7 +65,10 @@ static std::optional<raw_program> find_program(vector<raw_program>& raw_progs, c
     return {};
 }
 
-int bpf_check(int argc, char** argv) {
+extern "C" int bpf_check(int argc, char** argv) {
+    std::cout << "calling bpf_check from prevail" << std::endl;
+    return 0;
+
     // Always call ebpf_verifier_clear_thread_local_state on scope exit.
     at_scope_exit<ebpf_verifier_clear_thread_local_state> clear_thread_local_state;
 
