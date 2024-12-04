@@ -11,7 +11,7 @@ if (IS_DIRECTORY "${PROJECT_SOURCE_DIR}/.git")
             DESTINATION "${PROJECT_SOURCE_DIR}/.git/hooks")
     option(VERIFIER_ENABLE_TESTS "Build tests" ON)
 else()
-    option(VERIFIER_ENABLE_TESTS "Build tests" OFF)
+    option(VERIFIER_ENABLE_TESTS "Build tests" ON)
 endif ()
 
 message("Building tests: ${VERIFIER_ENABLE_TESTS}")
