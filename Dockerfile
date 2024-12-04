@@ -46,3 +46,5 @@ RUN git clone --recurse-submodule https://github.com/vbpf/ebpf-verifier.git prev
 RUN sed -i 's/VERIFIER_ENABLE_TESTS "Build tests" OFF/VERIFIER_ENABLE_TESTS "Build tests" ON/' prevail/CMakeLists.txt
 WORKDIR /verifiers/prevail
 RUN cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel `nproc`
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y tmux
