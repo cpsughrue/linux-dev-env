@@ -50,3 +50,36 @@ COPY ./verifiers/prevail /verifiers/prevail
 WORKDIR /verifiers/prevail
 RUN cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel `nproc`
 RUN cp /verifiers/prevail/libprevail.so /plugins
+
+# Build Exoverifier
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3 python3-pip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Alias python3 to python
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Install Lean
+WORKDIR /verifiers
+RUN wget https://github.com/leanprover-community/lean/releases/download/v3.42.1/lean-3.42.1-linux.tar.gz && \
+    tar -xzf lean-3.42.1-linux.tar.gz -C /usr/local && \
+    ln -s /usr/local/lean-3.42.1-linux/bin/lean /usr/bin/lean && \
+    ln -s /usr/local/lean-3.42.1-linux/bin/leanchecker /usr/bin/leanchecker && \
+    ln -s /usr/local/lean-3.42.1-linux/bin/leanpkg /usr/bin/leanpkg && \
+    lean --version
+
+# Set PATH for all subsequent commands
+ENV PATH="/usr/local/lean-3.42.1-linux/bin:${PATH}"
+
+# Build Exoverifier
+WORKDIR /verifiers
+RUN git clone --recurse-submodules https://github.com/uw-unsat/exoverifier.git
+
+WORKDIR /verifiers/exoverifier/lean
+RUN ./build-deps.sh && \
+    make bpf-examples && \
+    leanpkg configure && \
+    leanpkg build && \
+    leanpkg test
